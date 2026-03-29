@@ -18,14 +18,10 @@ RUN --mount=type=bind,source=package.json,target=package.json \
 
 FROM deps AS build
 
-RUN --mount=type=bind,source=package.json,target=package.json \
-    --mount=type=bind,source=package-lock.json,target=package-lock.json \
-    --mount=type=cache,target=/root/.npm \
-    npm ci
 
-COPY . .
+COPY package*.json ./
+RUN npm install --production
 
-RUN npm run build
 
 
 
