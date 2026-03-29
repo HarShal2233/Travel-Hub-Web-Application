@@ -6,7 +6,7 @@ WORKDIR /usr/src/app
 # Install dependencies
 FROM base AS deps
 COPY package*.json ./
-RUN npm install --production
+RUN npm install
 
 # Build stage
 FROM base AS build
@@ -16,16 +16,16 @@ COPY . .
 RUN npm run build
 
 # Final stage
-FROM base AS final
+FROM node:25-alpine AS final
+WORKDIR /usr/src/app
 ENV NODE_ENV=production
 
-# Use node user
-USER node
+# Install static server
+RUN npm install -g serve
 
-COPY package.json ./
-COPY --from=deps /usr/src/app/node_modules ./node_modules
+# Copy build output
 COPY --from=build /usr/src/app/dist ./dist
 
 EXPOSE 4173
 
-CMD ["npm", "run", "preview"]
+CMD ["serve", "-s", "dist", "-l", "4173"]
