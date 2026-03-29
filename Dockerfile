@@ -3,11 +3,6 @@ ARG NODE_VERSION=25
 FROM node:25-alpine AS base
 WORKDIR /usr/src/app
 
-# Install dependencies
-FROM base AS deps
-COPY package*.json ./
-RUN npm install
-
 # Build stage
 FROM base AS build
 COPY package*.json ./
@@ -23,7 +18,6 @@ ENV NODE_ENV=production
 # Install static server
 RUN npm install -g serve
 
-# Copy build output
 COPY --from=build /usr/src/app/dist ./dist
 
 EXPOSE 4173
